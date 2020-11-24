@@ -24,6 +24,10 @@ func NewEsClient6(config ElasticConfig, bulkWorkers int, pipeline string) (*Elas
 	}
 
 	if config.User != "" && config.Secret != "" {
+    	klog.Infof("es6 Secret: %s", config.Secret)
+// 	    tSecret, err := url.ParseQuery(config.Secret)
+// 	    sSecret := fmt.Sprintf("%s", tSecret)
+//     	klog.Infof("Parse es6 Secret: %s", sSecret)
 		startupFns = append(startupFns, elastic6.SetBasicAuth(config.User, config.Secret))
 	}
 

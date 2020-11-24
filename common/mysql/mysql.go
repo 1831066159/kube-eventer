@@ -57,7 +57,8 @@ func (mySvc MysqlService) SaveData(sinkData []interface{}) error {
 	if len(cfg.DBName) == 0 {
 		statementDBName = "kube_event"
 	} else {
-		statementDBName = cfg.DBName
+// 		statementDBName = cfg.DBName
+		statementDBName = "t_k8s_event"
 	}
 
 	prepareStatement := fmt.Sprintf("INSERT INTO %s (namespace,kind,name,type,reason,message,event_id,first_occurrence_time,last_occurrence_time) VALUES(?,?,?,?,?,?,?,?,?)", statementDBName)
@@ -105,10 +106,12 @@ func NewMysqlClient(uri *url.URL) (*MysqlService, error) {
 	mysqlSvc := MysqlService{
 		dsn: uri.RawQuery,
 	}
-
 	klog.Infof("mysql jdbc url: %s", mysqlSvc.dsn)
+    tdsn, err := url.ParseQuery(mysqlSvc.dsn)
+    ddsn := fmt.Sprintf("%s", tdsn)
+	klog.Infof("Parse mysql jdbc url: %s", ddsn)
 
-	db, err := sql.Open("mysql", mysqlSvc.dsn)
+	db, err := sql.Open("mysql", ddsn)
 	if err != nil {
 		return nil, fmt.Errorf("failed to connect mysql according jdbc url string: %s", err)
 	}
